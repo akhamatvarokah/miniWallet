@@ -35,7 +35,7 @@ func (u *UserBalanceHistory) CreateBalanceHistory(db *gorm.DB) (*UserBalanceHist
 	return u, nil
 }
 
-func (u *UserBalanceHistory) FindAllHistoryUser(db *gorm.DB) (*[]UserBalanceHistory, error) {
+func (u *UserBalanceHistory) FindAllHistoryUser(db *gorm.DB, uid uint64) (*[]UserBalanceHistory, error) {
 	var err error
 	ubh := []UserBalanceHistory{}
 	err = db.Debug().Model(&UserBalanceHistory{}).Limit(100).Order("created_at desc").Find(&ubh).Error

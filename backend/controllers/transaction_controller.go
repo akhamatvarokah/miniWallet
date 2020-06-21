@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -147,10 +146,19 @@ func (server *Server) History(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(uid)
+	ub := models.UserBalance{}
+	ub.UserId = uid
+	cb, err := ub.GetBalance(server.DB)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": http.StatusNotFound,
+			"error":  err.Error(),
+		})
+		return
+	}
 
 	ubh := models.UserBalanceHistory{}
-	ubhs, err := ubh.FindAllHistoryUser(server.DB)
+	ubhs, err := ubh.FindAllHistoryUser(server.DB, cb.ID)
 	if err != nil {
 		errList["No_post"] = "No Post Found"
 		c.JSON(http.StatusNotFound, gin.H{
