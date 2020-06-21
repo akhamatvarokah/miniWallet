@@ -182,6 +182,8 @@ func (server *Server) Trasaction(amount, userId, addBalance uint64, t string) (*
 		return nil, err
 	}
 
+	bb := cb.Balance
+
 	if t == "debit" {
 		ub.Balance = cb.Balance + amount
 	} else {
@@ -199,8 +201,8 @@ func (server *Server) Trasaction(amount, userId, addBalance uint64, t string) (*
 	}
 
 	ubh := models.UserBalanceHistory{
-		BalanceBefore: cb.Balance,
-		BalanceAfter:  balance.Balance,
+		BalanceBefore: bb,
+		BalanceAfter:  ub.Balance,
 		Type:          t,
 		UserBalanceId: balance.ID,
 		Author:        "Admin",
