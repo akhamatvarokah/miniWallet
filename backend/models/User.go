@@ -14,7 +14,7 @@ import (
 )
 
 type User struct {
-	ID        uint32    `gorm:"primary_key;auto_increment" json:"id"`
+	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	Username  string    `gorm:"size:255;not null;unique" json:"username"`
 	Email     string    `gorm:"size:100;not null;unique" json:"email"`
 	Password  string    `gorm:"size:100;not null;" json:"password"`
@@ -114,6 +114,18 @@ func (u *User) SaveUser(db *gorm.DB) (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
+
+	ub := UserBalance{
+		Balance:       0,
+		BalanceAchive: 0,
+		UserId:        u.ID,
+	}
+
+	_, err = ub.CreateBalance(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return u, nil
 }
 
@@ -137,6 +149,7 @@ func (u *User) FindUserByID(db *gorm.DB, uid uint32) (*User, error) {
 	if gorm.IsRecordNotFoundError(err) {
 		return &User{}, errors.New("User Not Found")
 	}
+
 	return u, err
 }
 
