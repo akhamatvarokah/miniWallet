@@ -9,6 +9,7 @@ func (s *Server) initializeRoutes() {
 		// Login Route
 		r.POST("/login", s.Login)
 		r.POST("/users", s.CreateUser)
+		r.GET("/users/others", middlewares.TokenAuthMiddleware(), s.OtherUser)
 
 		r.GET("/balance/history", middlewares.TokenAuthMiddleware(), s.History)
 		r.POST("/balance/topup", middlewares.TokenAuthMiddleware(), s.TopUp)

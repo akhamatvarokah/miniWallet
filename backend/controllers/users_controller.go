@@ -6,10 +6,38 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/akhamatvarokah/miniWallet/backend/auth"
 	"github.com/akhamatvarokah/miniWallet/backend/models"
 	"github.com/akhamatvarokah/miniWallet/backend/utils/formaterror"
 	"github.com/gin-gonic/gin"
 )
+
+func (server *Server) OtherUser(c *gin.Context) {
+	uid, err := auth.ExtractTokenID(c.Request)
+	if err != nil {
+		errList["Unauthorized"] = "Unauthorized"
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": http.StatusUnauthorized,
+			"error":  errList,
+		})
+		return
+	}
+
+	user := models.User{}
+	users, err := user.FindOtherUsers(server.DB, uid)
+	if err != nil {
+		errList["No_user"] = "No User Found"
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": http.StatusInternalServerError,
+			"error":  errList,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":   http.StatusOK,
+		"response": users,
+	})
+}
 
 func (server *Server) CreateUser(c *gin.Context) {
 
